@@ -175,7 +175,7 @@ review_body = id_for_dictionary(review_body_sentiment)
 helpful_proportion_id = id_for_prop(helpful_votes_raw / total_votes_raw)
 
 
-args_for_KNN_model = np.array([product_title, star_rating, review_title, review_body, helpful_proportion_id])
+args_for_KNN_model = np.array([[product_title, star_rating, review_title, review_body, helpful_proportion_id]])
 st.write(args_for_KNN_model)
 
 name = "knn_working_model_updated.joblib"
@@ -187,19 +187,22 @@ prediction, probabilities = knn_classifier.predict(args_for_KNN_model), knn_clas
 def interpret_prediction(review, pred, proba):
     proba = [round(proba[0], 3), round(proba[1], 3)]
     if prediction[0] == "Y":
-        print(
+        st.subheader(
             f'"{review}" is predicted to be a VERIFIED review, with {proba[1]*100}% probability of being VERIFIED and {proba[0]*100}% probability of being UNVERIFIED'
         )
     if prediction[0] == "N":
-        print(
+        st.subheader(
             f'"{review}" is predicted to be an UNVERIFIED review, with {proba[0]*100}% probability of being UNVERIFIED and {proba[1]*100}% probability of being VERIFIED'
         )
 
 
 interpret_prediction("This review", prediction, probabilities)
-st.subheader(
-    "This review is predicted to be a VERIFIED review, with 95.0% probability of being VERIFIED and 5.0% probability of being UNVERIFIED"
-)
+
+
+#st.subheader(
+#    "This review is predicted to be a VERIFIED review, with 95.0% probability of being VERIFIED and 5.0% probability of being UNVERIFIED"
+#)
+
 
 
 # name_list = ['models/AdiA32/KNN-FARS']
