@@ -1,0 +1,7 @@
+streamlit
+numpy
+pandas
+nltk
+nltk.corpus
+nltk.stem
+sklearn
