@@ -113,12 +113,11 @@ def id_for_prop(prop):
         return 0
 
 
-# x = st.slider("Select a value")
-# st.write(x, "squared is", x * x)
-
 st.title("Amazon Reviews ML Model!!!")
-st.text("(we testing right now ofc)")
 
+st.selectbox(
+    "Choose A Product Category!", ["Electronics", "Electronics (million model)", "Beauty", "Toys", "Office Products", "Apparel"]
+)
 
 product_title_raw = st.text_input("Enter the product title")
 star_rating_raw = int(st.number_input("Enter the star rating", 1, 5, 1))
@@ -142,33 +141,12 @@ df = pd.DataFrame(
 df = df_cleaning(df, "product_title_raw")
 df = df_cleaning(df, "review_title_raw")
 df = df_cleaning(df, "review_body_raw")
-st.write(df)
+# st.write(df)
 
 product_title_sentiment = df["new_product_title_raw"].apply(get_sentiment_scores).iloc[0]
 review_title_sentiment = df["new_review_title_raw"].apply(get_sentiment_scores).iloc[0]
 review_body_sentiment = df["new_review_body_raw"].apply(get_sentiment_scores).iloc[0]
-
-
-st.write(product_title_sentiment, review_title_sentiment, review_body_sentiment)
-
-# sentiment_dicts = pd.Series(df["new_review_body_raw"].apply(get_sentiment_scores))
-# st.write(sentiment_dicts)
-# df["neg_prop"] = sentiment_dicts.apply(lambda x: x["neg"])
-# df["neu_prop"] = sentiment_dicts.apply(lambda x: x["neu"])
-# df["pos_prop"] = sentiment_dicts.apply(lambda x: x["pos"])
-# df["compound_prop"] = sentiment_dicts.apply(lambda x: x["compound"])
-# st.write(df)
-
-# review body → get_sentiment_scores → id_for_dictionary(dic)
-# review title (take compound analysis from the dictionary thing)
-# product title (what is the product) (take compound analysis from the dictionary thing)
-
-
-# star rating (same)
-# number of helpful votes (create func: (make id 0 if total votes == 0: input for Helpful proportion ID)
-#                   ** assert helpful votes <= total votes, output user error num has to be within bounds
-# number of total votes (create func: input for Helpful proportion ID)
-# After getting proportion run id_for_prop(prop):
+# st.write(product_title_sentiment, review_title_sentiment, review_body_sentiment)
 
 product_title = product_title_sentiment["compound"]
 star_rating = star_rating_raw
@@ -178,7 +156,7 @@ helpful_proportion_id = id_for_prop(0 if total_votes_raw == 0 else (helpful_vote
 
 
 args_for_KNN_model = np.array([[product_title, star_rating, review_title, review_body, helpful_proportion_id]])
-st.write(args_for_KNN_model)
+# st.write(args_for_KNN_model)
 
 name = "knn_working_model_updated.joblib"
 # path = 'KNNModelFiles/'
@@ -190,11 +168,11 @@ def interpret_prediction(review, pred, proba):
     proba = [round(proba[0], 3), round(proba[1], 3)]
     if prediction[0] == "Y":
         st.subheader(
-            f'{review} is predicted to be a VERIFIED review, with {proba[1]*100}% probability of being VERIFIED and {proba[0]*100}% probability of being UNVERIFIED'
+            f"{review} is predicted to be a VERIFIED review, with {proba[1]*100}% probability of being VERIFIED and {proba[0]*100}% probability of being UNVERIFIED"
         )
     if prediction[0] == "N":
         st.subheader(
-            f'{review} is predicted to be an UNVERIFIED review, with {proba[0]*100}% probability of being UNVERIFIED and {proba[1]*100}% probability of being VERIFIED'
+            f"{review} is predicted to be an UNVERIFIED review, with {proba[0]*100}% probability of being UNVERIFIED and {proba[1]*100}% probability of being VERIFIED"
         )
 
 
