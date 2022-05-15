@@ -190,11 +190,11 @@ def interpret_prediction(review, pred, proba):
     proba = [round(proba[0], 3), round(proba[1], 3)]
     if prediction[0] == "Y":
         st.subheader(
-            f'"{review}" is predicted to be a VERIFIED review, with {proba[1]*100}% probability of being VERIFIED and {proba[0]*100}% probability of being UNVERIFIED'
+            f'{review} is predicted to be a VERIFIED review, with {proba[1]*100}% probability of being VERIFIED and {proba[0]*100}% probability of being UNVERIFIED'
         )
     if prediction[0] == "N":
         st.subheader(
-            f'"{review}" is predicted to be an UNVERIFIED review, with {proba[0]*100}% probability of being UNVERIFIED and {proba[1]*100}% probability of being VERIFIED'
+            f'{review} is predicted to be an UNVERIFIED review, with {proba[0]*100}% probability of being UNVERIFIED and {proba[1]*100}% probability of being VERIFIED'
         )
 
 
