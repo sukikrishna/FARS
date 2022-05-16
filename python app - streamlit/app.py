@@ -10,7 +10,7 @@ import nltk.corpus
 nltk.download("stopwords")
 from nltk.corpus import stopwords
 
-from nltk.stem.porter import PorterStemmer
+# from nltk.stem.porter import PorterStemmer
 
 nltk.download("wordnet")
 from nltk.stem import WordNetLemmatizer
@@ -20,8 +20,10 @@ from vaderSentiment.vaderSentiment import SentimentIntensityAnalyzer
 
 ### model
 from joblib import load
+
 # from sklearn.neighbors import KNeighborsClassifier
-import sklearn 
+
+import sklearn
 
 # sys.modules['sklearn.neighbors.base'] = sklearn.neighbors._base
 
@@ -95,7 +97,7 @@ def id_for_dictionary(dic):
         ind = list(dic.values()).index(max(list(dic.values())))
 
     if ind == 1:
-        return 0  # nuetral
+        return 0  # neutral
     elif ind == 0:
         return -1  # neg
     else:
@@ -172,7 +174,7 @@ product_title = product_title_sentiment["compound"]
 star_rating = star_rating_raw
 review_title = review_title_sentiment["compound"]
 review_body = id_for_dictionary(review_body_sentiment)
-helpful_proportion_id = id_for_prop(helpful_votes_raw / total_votes_raw)
+helpful_proportion_id = id_for_prop(0 if total_votes_raw == 0 else (helpful_votes_raw / total_votes_raw))
 
 
 args_for_KNN_model = np.array([[product_title, star_rating, review_title, review_body, helpful_proportion_id]])
@@ -188,32 +190,17 @@ def interpret_prediction(review, pred, proba):
     proba = [round(proba[0], 3), round(proba[1], 3)]
     if prediction[0] == "Y":
         st.subheader(
-            f'"{review}" is predicted to be a VERIFIED review, with {proba[1]*100}% probability of being VERIFIED and {proba[0]*100}% probability of being UNVERIFIED'
+            f'{review} is predicted to be a VERIFIED review, with {proba[1]*100}% probability of being VERIFIED and {proba[0]*100}% probability of being UNVERIFIED'
         )
     if prediction[0] == "N":
         st.subheader(
-            f'"{review}" is predicted to be an UNVERIFIED review, with {proba[0]*100}% probability of being UNVERIFIED and {proba[1]*100}% probability of being VERIFIED'
+            f'{review} is predicted to be an UNVERIFIED review, with {proba[0]*100}% probability of being UNVERIFIED and {proba[1]*100}% probability of being VERIFIED'
         )
 
 
 interpret_prediction("This review", prediction, probabilities)
 
 
-#st.subheader(
+# st.subheader(
 #    "This review is predicted to be a VERIFIED review, with 95.0% probability of being VERIFIED and 5.0% probability of being UNVERIFIED"
-#)
-
-
-
-# name_list = ['models/AdiA32/KNN-FARS']
-# interfaces = [gr.Interface.load(name) for name in name_list]
-# gr.mix.Parallel(*interfaces, title="Testing KNN Model", description="yo we out here testing gradio and hugginface").launch()
-
-
-# def greet(name):
-#     return "Hello " + name + "!!"
-
-# iface = gr.Interface(fn=greet, inputs="text", outputs="text")
-# iface.launch()
-
-#
+# )
