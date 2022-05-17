@@ -177,6 +177,11 @@ current_field_value = {
 }
 
 current_field_value = current_field_value[selected_category][int(verified_checkbox)]
+
+models = {"Electronics":"knn_electronics_million_model.joblib", "Beauty":"knn_beauty_model.joblib"}
+
+name = models[selected_category]
+
 if selected_category == "Toys":
     name = "knn_toys_model.joblib"
 elif selected_category == "Beauty":
