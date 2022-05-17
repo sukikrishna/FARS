@@ -1,6 +1,6 @@
-import streamlit as st
+import streamlit as st  # noqa: F401
 from multiapp import MultiApp
-import KNN_blank, KNN_w_examples, Bigram_blank # also can import your app modules here w seperate folder w from __folder__ 
+import KNN_blank, KNN_w_examples, Bigram_blank  # also can import your app modules here w separate folder w from __folder__
 
 app = MultiApp()
 
