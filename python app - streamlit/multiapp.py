@@ -2,6 +2,7 @@
 """
 import streamlit as st
 
+
 class MultiApp:
     """Framework for combining multiple streamlit applications.
     Usage:

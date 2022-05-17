@@ -1,6 +1,6 @@
 import streamlit as st
 from multiapp import MultiApp
-# from apps import home, data_stats # also can import your app modules here w seperate folder
+import KNN_blank, KNN_w_examples, Bigram_blank # also can import your app modules here w seperate folder w from __folder__ 
 
 app = MultiApp()
 
