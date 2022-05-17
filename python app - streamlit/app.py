@@ -113,19 +113,94 @@ def id_for_prop(prop):
         return 0
 
 
-# x = st.slider("Select a value")
-# st.write(x, "squared is", x * x)
-
 st.title("Amazon Reviews ML Model!!!")
-st.text("(we testing right now ofc)")
+
+categories = ["Electronics", "Beauty", "Toys", "Office Products", "Apparel"]
 
 
-product_title_raw = st.text_input("Enter the product title")
-star_rating_raw = int(st.number_input("Enter the star rating", 1, 5, 1))
-review_title_raw = st.text_input("Enter the review title")
-review_body_raw = st.text_input("Enter the review body")
-total_votes_raw = int(st.number_input("Enter the number of total votes", 0, None, 1))
-helpful_votes_raw = int(st.number_input("Enter the number of helpful votes", 0, int(total_votes_raw), 1))
+# def category_change(selected_category):
+
+
+selected_category = st.selectbox(
+    "Choose A Product Category!",
+    categories,
+    # on_change=category_change(),
+    # args=('Electronics',)
+)
+verified_checkbox = st.checkbox(
+    "Verified Review",
+    value=True,
+)
+
+path = "../KNNModelFiles/"
+name = "knn_working_model_updated.joblib"
+placeholder = ["placeholder"]
+current_field_value = {
+    "Electronics": [
+        {
+            "review_body": "These are great rechargable batteries. Much easier to use than the type I used to have. They work right away - the charger is very easy to use - and they last a long long time!! Great way to do my little part to help the earth and save myself some $$$.",
+            "review_headline": "I love an easy way to help the earth!! (and save $)",
+            "product_title": "Sanyo Eneloop NiMH Battery Charger with 4AA NiMH Rechargable Batteries (Discontinued by Manufacturer)",
+            "star_rating": 5,
+            "helpful_votes": 2,
+            "total_votes": 4,
+            "verified_purchase": "N",
+        },
+        {
+            "review_body": "cord fell APART WITH ALMOST NO USE! Not oem, very poor cheap design. do not buy! laptop will not recog properly.",
+            "review_headline": "very bad product",
+            "product_title": "Techno Earth® NEW AC Adapter/Power Supply Cord for HP/Compaq nx7400",
+            "star_rating": 1,
+            "helpful_votes": 0,
+            "total_votes": 0,
+            "verified_purchase": "Y",
+        },
+    ],
+    "Beauty": {
+        "review_body": "They are exactly what I expected, they are excellently made. Not cheap, delivery was fast and punctual. Def. Will buy & support this seller again.",
+        "review_headline": "Perfect!",
+        "product_title": "Lot of 20 Dozen Assorted Small and Large Perm Rods",
+        "star_rating": 5,
+        "helpful_votes": 0,
+        "total_votes": 0,
+        "verified_purchase": "Y",
+    },
+    "Toys": {
+        "review_body": "Can't wait to introduce people that have not played thus game lol love it good fun times had by all as long as u r not too serious lol came very quick and we'll packed and very happy with it",
+        "review_headline": "Love It fun game",
+        "product_title": "Cards Against Humanity",
+        "star_rating": 5,
+        "helpful_votes": 0,
+        "total_votes": 0,
+        "verified_purchase": "Y",
+    },
+}
+
+current_field_value = current_field_value[selected_category][int(verified_checkbox)]
+
+models = {"Electronics":"knn_electronics_million_model.joblib", "Beauty":"knn_beauty_model.joblib"}
+
+name = models[selected_category]
+
+if selected_category == "Toys":
+    name = "knn_toys_model.joblib"
+elif selected_category == "Beauty":
+    name = "knn_beauty_model.joblib"
+elif selected_category == "Electronics":
+    name = "knn_electronics_million_model.joblib"
+
+product_title_raw = st.text_input(
+    "Enter the product title", value=current_field_value["product_title"], placeholder=placeholder[0]
+)
+star_rating_raw = int(st.number_input("Enter the star rating", 1, 5, value=current_field_value["star_rating"]))
+review_title_raw = st.text_input(
+    "Enter the review title", value=current_field_value["review_headline"], placeholder=placeholder[0]
+)
+review_body_raw = st.text_input("Enter the review body", value=current_field_value["review_body"], placeholder=placeholder[0])
+total_votes_raw = int(st.number_input("Enter the number of total votes", 0, None, value=current_field_value["total_votes"]))
+helpful_votes_raw = int(
+    st.number_input("Enter the number of helpful votes", 0, int(total_votes_raw), value=current_field_value["helpful_votes"])
+)
 # defaults to 1 if total_votes_raw changes
 
 df = pd.DataFrame(
@@ -142,33 +217,12 @@ df = pd.DataFrame(
 df = df_cleaning(df, "product_title_raw")
 df = df_cleaning(df, "review_title_raw")
 df = df_cleaning(df, "review_body_raw")
-st.write(df)
+# st.write(df)
 
 product_title_sentiment = df["new_product_title_raw"].apply(get_sentiment_scores).iloc[0]
 review_title_sentiment = df["new_review_title_raw"].apply(get_sentiment_scores).iloc[0]
 review_body_sentiment = df["new_review_body_raw"].apply(get_sentiment_scores).iloc[0]
-
-
-st.write(product_title_sentiment, review_title_sentiment, review_body_sentiment)
-
-# sentiment_dicts = pd.Series(df["new_review_body_raw"].apply(get_sentiment_scores))
-# st.write(sentiment_dicts)
-# df["neg_prop"] = sentiment_dicts.apply(lambda x: x["neg"])
-# df["neu_prop"] = sentiment_dicts.apply(lambda x: x["neu"])
-# df["pos_prop"] = sentiment_dicts.apply(lambda x: x["pos"])
-# df["compound_prop"] = sentiment_dicts.apply(lambda x: x["compound"])
-# st.write(df)
-
-# review body → get_sentiment_scores → id_for_dictionary(dic)
-# review title (take compound analysis from the dictionary thing)
-# product title (what is the product) (take compound analysis from the dictionary thing)
-
-
-# star rating (same)
-# number of helpful votes (create func: (make id 0 if total votes == 0: input for Helpful proportion ID)
-#                   ** assert helpful votes <= total votes, output user error num has to be within bounds
-# number of total votes (create func: input for Helpful proportion ID)
-# After getting proportion run id_for_prop(prop):
+# st.write(product_title_sentiment, review_title_sentiment, review_body_sentiment)
 
 product_title = product_title_sentiment["compound"]
 star_rating = star_rating_raw
@@ -178,11 +232,11 @@ helpful_proportion_id = id_for_prop(0 if total_votes_raw == 0 else (helpful_vote
 
 
 args_for_KNN_model = np.array([[product_title, star_rating, review_title, review_body, helpful_proportion_id]])
-st.write(args_for_KNN_model)
+# st.write(args_for_KNN_model)
 
-name = "knn_working_model_updated.joblib"
-# path = 'KNNModelFiles/'
-knn_classifier = load(name)
+# name = "knn_working_model_updated.joblib"
+# path = "../KNNModelFiles/"
+knn_classifier = load(path + name)
 prediction, probabilities = knn_classifier.predict(args_for_KNN_model), knn_classifier.predict_proba(args_for_KNN_model)[0]
 
 
@@ -190,11 +244,11 @@ def interpret_prediction(review, pred, proba):
     proba = [round(proba[0], 3), round(proba[1], 3)]
     if prediction[0] == "Y":
         st.subheader(
-            f'{review} is predicted to be a VERIFIED review, with {proba[1]*100}% probability of being VERIFIED and {proba[0]*100}% probability of being UNVERIFIED'
+            f"{review} is predicted to be a VERIFIED review, with {proba[1]*100}% probability of being VERIFIED and {proba[0]*100}% probability of being UNVERIFIED"
         )
     if prediction[0] == "N":
         st.subheader(
-            f'{review} is predicted to be an UNVERIFIED review, with {proba[0]*100}% probability of being UNVERIFIED and {proba[1]*100}% probability of being VERIFIED'
+            f"{review} is predicted to be an UNVERIFIED review, with {proba[0]*100}% probability of being UNVERIFIED and {proba[1]*100}% probability of being VERIFIED"
         )
 
 
