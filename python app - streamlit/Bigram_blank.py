@@ -356,4 +356,27 @@ def app():
 
     interpret_prediction(review_body_raw, prediction, probabilities)
 
-    # output be the table, the prediction, and the percentages
+    """
+    # What the Features Mean
+
+    To reduce word space, let "gold" represent "verified," and let "fake" represent "unverified."
+    NOTE: An "unverified" review isn't necessarily fake. A review is defined as "unverified" if the user did not buy the product from Amazon.
+
+    ### Setup
+    - `gold_bigram_dict` contains all the bigrams that appeared in verified reviews and their # of occurrences 
+    - `fake_bigram_dict` contains all the bigrams that appeared in unverified reviews and their # of occurrences 
+
+    ### Features
+    `bigram_count` = # of bigrams in the review
+
+    `gold%` = # bigrams in the review that appear in `gold_bigram_dict` at least 2 times / bigram_count
+
+    `gold_unique%` = (# of bigrams that exist in `gold_bigram_dict` - # of bigrams that appear in `fake_bigram_dict` at least 3 times) / bigram_count
+
+    `gold_score` = sum of all the bigrams' # of occurrences in verified reviews / bigram_count
+
+    `gold_top_avg_score` = sum of the top 5 bigrams' # of occurrences in verified reviews / 5
+
+    `gold_top_score` = highest # of occurrences in verified reviews
+
+    Similar logic for the features `fake%`, `fake_unique%`, `fake_score`, `fake_top_avg_score`, and `fake_top_score`."""
