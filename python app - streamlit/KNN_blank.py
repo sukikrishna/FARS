@@ -133,13 +133,6 @@ def app():
 
     name = models[selected_category]
 
-    # if selected_category == "Toys":
-    #     name = "knn_toys_model.joblib"
-    # elif selected_category == "Beauty":
-    #     name = "knn_beauty_model.joblib"
-    # elif selected_category == "Electronics":
-    #     name = "knn_electronics_million_model.joblib"
-
     product_title_raw = st.text_input("Enter the product title")
     star_rating_raw = int(st.number_input("Enter the star rating", 1, 5, 3))
     review_title_raw = st.text_input("Enter the review title")
@@ -183,6 +176,7 @@ def app():
     st.dataframe(chart_df)
     st.bar_chart(chart_df)
 
+    # inputs
     product_title = product_title_sentiment["compound"]
     star_rating = star_rating_raw
     review_title = review_title_sentiment["compound"]
@@ -201,11 +195,11 @@ def app():
         proba = [round(proba[0], 3), round(proba[1], 3)]
         if prediction[0] == "Y":
             st.subheader(
-                f"{review} is predicted to be a VERIFIED review, with {proba[1]*100}% probability of being VERIFIED and {proba[0]*100}% probability of being UNVERIFIED"
+                f"{review} is predicted to be a VERIFIED review, with {round(proba[1]*100, 2)}% probability of being VERIFIED and {proba[0]*100}% probability of being UNVERIFIED"
             )
         if prediction[0] == "N":
             st.subheader(
-                f"{review} is predicted to be an UNVERIFIED review, with {proba[0]*100}% probability of being UNVERIFIED and {proba[1]*100}% probability of being VERIFIED"
+                f"{review} is predicted to be an UNVERIFIED review, with {round(proba[0]*100, 2)}% probability of being UNVERIFIED and {proba[1]*100}% probability of being VERIFIED"
             )
 
     interpret_prediction("This review", prediction, probabilities)
