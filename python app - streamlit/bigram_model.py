@@ -1,3 +1,4 @@
+# flake8: noqa
 import streamlit as st
 from joblib import dump, load
 
@@ -396,4 +397,3 @@ interpret_prediction(review_body_raw, prediction, probabilities)
     `gold_top_score` = highest # of occurrences in verified reviews
 
     Similar logic for the features `fake%`, `fake_unique%`, `fake_score`, `fake_top_avg_score`, and `fake_top_score`."""
-
