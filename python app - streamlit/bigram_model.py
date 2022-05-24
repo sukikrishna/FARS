@@ -39,12 +39,12 @@ from itertools import chain
 
 
 # CHANGE category - done
-category = "Electronics"
+category = "Beauty"
 
 # CHANGE ML_model_file_path - done
 ML_model_file_path = "../Ester Tsai (Bigram and ML)/ML Models/"
 
-ML_model_file_name = f"2022_05_11 rf_model {(category)}.joblib"
+ML_model_file_name = f"2022_05_18 rf_model {(category)}.joblib"
 rf_model = load(ML_model_file_path + ML_model_file_name)
 
 # CHANGE bigram_file_path - done
