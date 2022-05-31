@@ -336,7 +336,7 @@ example_review_body = "I have used hair styling tools from this brand before and
 review_body_raw = st.text_input("Enter the review body", value=example_review_body if example_checkbox else "")
 user_input_processed_df = clean_review_and_add_features(review_body_raw, gold_bigram_df, fake_bigram_df)
 
-# DISPLAY THIS TABLE!!!!!!!!!!!!!!!!!!!!! -> jk
+# DISPLAY THIS TABLE!!!!!!!!!!!!!!!!!!!!! -> jk cleaner version displayed below
 # st.dataframe(user_input_processed_df)
 
 
@@ -376,72 +376,77 @@ def interpret_prediction(review, pred, proba, print_review=True):
     if pred == 0:
         st.subheader(f"PREDICTION: UNVERIFIED ({prob_unverified}%) | VERIFIED ({prob_verified}%)")
 
+
 def plot_scores(review, user_input_processed_df, prediction, probabilities):
-    review_df = user_input_processed_df[['review_body', 'review_cleaned', 'bigrams']]
-    
+    review_df = user_input_processed_df[["review_body", "review_cleaned", "bigrams"]]
+
     # DISPLAY IN STREAMLIT! -> done - function implemented
     interpret_prediction(review, prediction, probabilities, print_review=False)
     # DISPLAY IN STREAMLIT! -> done - st.dataframe
     st.dataframe(review_df)
-    
+
     R = user_input_processed_df.loc[0]
-    
-    df_for_display = pd.DataFrame([{'Overall Proportion': R['gold%'], 'Unique Proportion': R['gold_unique%'], 
-                                    'Overall Score': R['gold_score'], 'Top 5 Avg Score': R['gold_top_avg_score'], 
-                                    'Top Score': R['gold_top_score']},
-                                   {'Overall Proportion': R['fake%'], 'Unique Proportion': R['fake_unique%'], 
-                                    'Overall Score': R['fake_score'], 'Top 5 Avg Score': R['fake_top_avg_score'], 
-                                    'Top Score': R['fake_top_score']}],
-                                     index=['Gold', 'Fake'])
+
+    df_for_display = pd.DataFrame(
+        [
+            {
+                "Overall Proportion": R["gold%"],
+                "Unique Proportion": R["gold_unique%"],
+                "Overall Score": R["gold_score"],
+                "Top 5 Avg Score": R["gold_top_avg_score"],
+                "Top Score": R["gold_top_score"],
+            },
+            {
+                "Overall Proportion": R["fake%"],
+                "Unique Proportion": R["fake_unique%"],
+                "Overall Score": R["fake_score"],
+                "Top 5 Avg Score": R["fake_top_avg_score"],
+                "Top Score": R["fake_top_score"],
+            },
+        ],
+        index=["Gold", "Fake"],
+    )
     # DISPLAY IN STREAMLIT! -> done - st.dataframe
     st.dataframe(df_for_display)
-    
-    compare_percentages_for_plot = pd.DataFrame({'Category':['Gold']*2+['Fake']*2,
-                                   'Feature':['Overall Proportion', 'Unique Proportion']*2,
-                                   'Proportion':[R['gold%'], R['gold_unique%'], R['fake%'], R['fake_unique%']]})
 
-    compare_scores_for_plot = pd.DataFrame({'Category':['Gold']*3+['Fake']*3,
-                              'Feature':['Overall Score', 'Top 5 Avg Score', 'Top Score']*2,
-                              'Score': [R['gold_score'], R['gold_top_avg_score'], R['gold_top_score'], 
-                                        R['fake_score'], R['fake_top_avg_score'], R['fake_top_score']]})
-    
-    # DISPLAY IN STREAMLIT!
-    fig, axes = plt.subplots(nrows=1, ncols=2, figsize=(15,5))
-    fig.suptitle(f'Review Analysis')
+    compare_percentages_for_plot = pd.DataFrame(
+        {
+            "Category": ["Gold"] * 2 + ["Fake"] * 2,
+            "Feature": ["Overall Proportion", "Unique Proportion"] * 2,
+            "Proportion": [R["gold%"], R["gold_unique%"], R["fake%"], R["fake_unique%"]],
+        }
+    )
+
+    compare_scores_for_plot = pd.DataFrame(
+        {
+            "Category": ["Gold"] * 3 + ["Fake"] * 3,
+            "Feature": ["Overall Score", "Top 5 Avg Score", "Top Score"] * 2,
+            "Score": [
+                R["gold_score"],
+                R["gold_top_avg_score"],
+                R["gold_top_score"],
+                R["fake_score"],
+                R["fake_top_avg_score"],
+                R["fake_top_score"],
+            ],
+        }
+    )
+
+    # DISPLAY IN STREAMLIT! --> done basic
+    fig, axes = plt.subplots(nrows=1, ncols=2, figsize=(15, 5))
+    fig.suptitle(f"Review Analysis")
     ax = axes[0]
-    sns.barplot(ax=ax, x='Feature', y='Proportion', hue='Category', data=compare_percentages_for_plot) 
+    sns.barplot(ax=ax, x="Feature", y="Proportion", hue="Category", data=compare_percentages_for_plot)
     ax = axes[1]
-    sns.barplot(x='Feature', y='Score', hue='Category', data=compare_scores_for_plot) 
-    
+    sns.barplot(x="Feature", y="Score", hue="Category", data=compare_scores_for_plot)
+    st.pyplot(fig)
+    # compare_scores_for_plot
+    # compare_percentages_for_plot
 
 # PLOT THE REVIEW ANALYSIS + COMPARISON
 plot_scores(review_body_raw, user_input_processed_df, prediction, probabilities)
 
 # interpret_prediction(review_body_raw, prediction, probabilities) --> old way to display data
-# """ old features display
-#     # What the Features Mean
-
-#     To reduce word space, let "gold" represent "verified," and let "fake" represent "unverified."
-#     NOTE: An "unverified" review isn't necessarily fake. A review is defined as "unverified" if the user did not buy the product from Amazon.
-
-#     ### Setup
-#     - `gold_bigram_dict` contains all the bigrams that appeared in verified reviews and their # of occurrences
-#     - `fake_bigram_dict` contains all the bigrams that appeared in unverified reviews and their # of occurrences
-
-#     ### Features
-#     `bigram_count` = # of bigrams in the review
-
-#     `gold%` = # bigrams in the review that appear in `gold_bigram_dict` at least 2 times / bigram_count
-
-#     `gold_unique%` = (# of bigrams that exist in `gold_bigram_dict` - # of bigrams that appear in `fake_bigram_dict` at least 3 times) / bigram_count
-
-#     `gold_score` = sum of all the bigrams' # of occurrences in verified reviews / bigram_count
-
-#     `gold_top_avg_score` = sum of the top 5 bigrams' # of occurrences in verified reviews / 5
-
-#     `gold_top_score` = highest # of occurrences in verified reviews
-
-#     Similar logic for the features `fake%`, `fake_unique%`, `fake_score`, `fake_top_avg_score`, and `fake_top_score`."""
 
 """
 # What the Features Mean
@@ -450,15 +455,15 @@ To reduce word space, let "gold" represent "verified," and let "fake" represent 
 NOTE: An "unverified" review isn't necessarily fake. A review is defined as "unverified" if the user did not buy the product from Amazon.
 
 ### Setup
-- `gold_bigram_dict` contains all the bigrams that appeared in verified reviews and their # of occurrences 
-- `fake_bigram_dict` contains all the bigrams that appeared in unverified reviews and their # of occurrences 
+- `verified bigram counter` contains all the bigrams that appeared in verified reviews and their # of occurrences 
+- `unverified bigram counter` contains all the bigrams that appeared in unverified reviews and their # of occurrences 
 
 ### Features
 `bigram_count` = # of bigrams in the review
 
-`gold%` ("Overall Proportion") = # bigrams in the review that appear in `gold_bigram_dict` at least 2 times / bigram_count
+`gold%` ("Overall Proportion") = # bigrams in the review that appear in `verified bigram counter` at least 2 times / bigram_count
 
-`gold_unique%` ("Unique Proportion") = (# of bigrams that exist in `gold_bigram_dict` - # of bigrams that appear in `fake_bigram_dict` at least 3 times) / bigram_count
+`gold_unique%` ("Unique Proportion") = (# of bigrams that exist in `verified bigram counter` - # of bigrams that appear in `unverified bigram counter` at least 3 times) / bigram_count
 
 `gold_score` ("Overall Score") = sum of all the bigrams' # of occurrences in verified reviews / bigram_count
 
